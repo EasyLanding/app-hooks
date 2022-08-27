@@ -36,26 +36,13 @@ const TaskInfo = ({ label, onDeleted, onToggleImportant, onToggleDone, done, imp
 		}, 1000)
 		if (timeFlag)
 		{
+			// eslint-disable-next-line no-unused-expressions
 			countdown
 		} else
 		{
 			return clearInterval(countdown)
 		}
 	}, [timeFlag, secondsElapsed])
-
-	// const [seconds, setSeconds] = useState(120);
-	// const [timerActive, setTimerActive] = useState(false);
-
-	// useEffect(() =>
-	// {
-	// 	if (seconds > 0 && timerActive)
-	// 	{
-	// 		setTimeout(setSeconds, 1000, seconds - 1);
-	// 	} else
-	// 	{
-	// 		setTimerActive(false);
-	// 	}
-	// }, [seconds, timerActive]);
 
 	let classNames = '';
 	let classNamesD = 'description';
@@ -101,7 +88,6 @@ const TaskInfo = ({ label, onDeleted, onToggleImportant, onToggleDone, done, imp
 						<button
 							onClick={ () => setTimeFlag(false) }
 							className="icon-pause"></button>
-						{/* <p className="timeTask"> { seconds }</p> */ }
 						<p className="timeTask">{ getHours() }:{ getMinutes() }:{ getSeconds() }</p>
 					</span>
 					<span className="created">{ formatDistanceToNow(time, { includeSeconds: true }) }</span>
