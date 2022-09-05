@@ -1,4 +1,4 @@
-import React, {  useState } from 'react';
+import React, { useState } from 'react';
 import HeadrsApp from '../HeadrsApp/HeadrsApp';
 import Footer from '../Footer/Footer';
 import Task from '../Task/Task';
@@ -11,8 +11,9 @@ let nextId = 100
 let keys = 101
 let newArr = []
 
-const App = () => {
-    const createToDoItem = (label) => 
+const App = () =>
+{
+    const createToDoItem = (label, min, sec) => 
     {
 
         return {
@@ -21,11 +22,13 @@ const App = () => {
             done: false,
             id: nextId++,
             key: keys++,
-            time: new Date()
+            time: new Date(),
+            min: min,
+            sec: sec
         }
     }
 
-    const todoData = [createToDoItem("Completed task"),createToDoItem("Active task"),createToDoItem("Editing task")]
+    const todoData = [createToDoItem("Completed task", 10, 11), createToDoItem("Active task", 10, 11), createToDoItem("Editing task", 10, 11)]
     const [todoTask, setTodoTask] = useState(todoData)
     const [term, setTerm] = useState('')
     const [filter, setFilter] = useState('all')
@@ -33,7 +36,7 @@ const App = () => {
 
     const deletedItem = (id) =>
     {
-        setTodoTask(( todoTask ) =>
+        setTodoTask((todoTask) =>
         {
             const index = todoTask.findIndex((el) => el.id === id)
 
@@ -42,14 +45,14 @@ const App = () => {
             const newArray = [...beforeArray, ...afterArray]
 
             return newArray
-            
+
         })
     }
 
-    const onAddItem = (text, time) =>
+    const onAddItem = (text, min, sec) =>
     {
-        const newItem = createToDoItem(text, time)
-        setTodoTask(( todoTask ) =>
+        const newItem = createToDoItem(text, min, sec)
+        setTodoTask((todoTask) =>
         {
             const newArr = [...todoTask, newItem]
 
@@ -97,10 +100,10 @@ const App = () => {
 
     const onSearchChange = (term) =>
     {
-        setTerm( term )
+        setTerm(term)
     };
 
-   const searchItems = (items, term)=>
+    const searchItems = (items, term) =>
     {
         if (term.length === 0)
         {
@@ -129,14 +132,14 @@ const App = () => {
 
     const onFilterChange = (filter) =>
     {
-        setFilter( filter );
+        setFilter(filter);
     };
 
     const onClearChange = () =>
     {
         todoTask.forEach((el) =>
         {
-          
+
             if (el.done)
             {
                 deletedItem(el.id)
@@ -151,12 +154,23 @@ const App = () => {
             const idx = todoTask.findIndex((el) => el.id === id)
             todoTask[idx].label = text
             return newArr
-        })  
+        })
     }
-
+    const setTimeFromTimer = (id, minutes, seconds) =>
+    {
+        let todos = todoTask;
+        todos.forEach((item) =>
+        {
+            if (item.id === id)
+            {
+                item.min = minutes;
+                item.sec = seconds;
+            }
+        });
+        setTodoTask(todos);
+    };
 
     const visibleItems = filterTask(searchItems(todoTask, term), filter)
-
 
     const doneCount = todoTask.filter((el) => el.done).length
     const todoCount = todoTask.length - doneCount
@@ -173,6 +187,7 @@ const App = () => {
                     onToggleImportant={ onToggleImportant }
                     onToggleDone={ onToggleDone }
                     onSaveChange={ onSaveChange }
+                    setTimeFromTimer={ setTimeFromTimer }
                 />
 
                 < AddElement

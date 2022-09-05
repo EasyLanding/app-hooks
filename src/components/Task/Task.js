@@ -3,7 +3,8 @@ import './Task.css';
 import TaskInfo from './TaskInfo';
 
 
-const Task = ({ todos, onDeleted, onToggleDone, onToggleImportant, onAdded, onSaveChange, statusHandler }) => {
+const Task = ({ todos, onDeleted, onToggleDone, onToggleImportant, onAdded, onSaveChange, setTimeFromTimer }) =>
+{
 	const elements = todos.map((el) =>
 	{
 		const { id, ...itemProps } = el;
@@ -15,9 +16,9 @@ const Task = ({ todos, onDeleted, onToggleDone, onToggleImportant, onAdded, onSa
 				onToggleImportant={ () => onToggleImportant(id) }
 				onToggleDone={ () => onToggleDone(id) }
 				onAdded={ () => onAdded(id) }
-				text={  itemProps.text }
-				onSaveChange={onSaveChange}
-				id={id}
+				onSaveChange={ onSaveChange }
+				id={ id }
+				setTimeFromTimer={ setTimeFromTimer }
 			/>
 		);
 	});

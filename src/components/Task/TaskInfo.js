@@ -2,47 +2,89 @@ import React, { useEffect, useState } from 'react';
 import './Task.css';
 import { formatDistanceToNow } from 'date-fns';
 
-const TaskInfo = ({ label, onDeleted, onToggleImportant, onToggleDone, done, important, onSaveChange, text, time, id }) =>
+const TaskInfo = ({ label, onDeleted, onToggleImportant, onToggleDone, done, important, onSaveChange, time, id, setTimeFromTimer, min, sec }) =>
 {
 	const [edit, setEdit] = useState(false)
-	const [secondsElapsed, setSecondsElapsed] = useState(122)
-	const [timeFlag, setTimeFlag] = useState(false)
+
+	const [timeFlag, setTimeFlag] = useState({
+		minutes: 0,
+		seconds: 0,
+	});
+	const [timerOn, setTimerOn] = useState(false);
+
+	useEffect(() =>
+	{
+		setTimeFlag(() =>
+		{
+			if (min === '')
+			{
+				min = 0;
+			}
+			if (sec === '')
+			{
+				sec = 0;
+			}
+			return {
+				minutes: min,
+				seconds: sec,
+			};
+		});
+	}, []);
+
+	useEffect(() =>
+	{
+		let interval = null;
+		if (timerOn)
+		{
+			interval = setInterval(() =>
+			{
+				if (timeFlag.seconds > 0)
+				{
+					setTimeFlag(() =>
+					{
+						return {
+							seconds: timeFlag.seconds - 1,
+							minutes: timeFlag.minutes,
+						};
+					});
+					setTimeFromTimer(id, timeFlag.minutes, timeFlag.seconds);
+				}
+				if (timeFlag.seconds === 0 && timeFlag.minutes > 0)
+				{
+					setTimeFlag((timeFlag) =>
+					{
+						return {
+							seconds: timeFlag.seconds + 59,
+							minutes: timeFlag.minutes - 1,
+						};
+					});
+					setTimeFromTimer(id, timeFlag.minutes, timeFlag.seconds);
+				} else
+				{
+					clearInterval(interval);
+				}
+			}, 1000);
+		}
+		return () => clearInterval(interval);
+	}, [timerOn, timeFlag.minutes, timeFlag.seconds, setTimeFromTimer, id]);
+
+	let m = timeFlag.minutes;
+	let s = timeFlag.seconds;
+
+	m < 10 && (m = '0' + m);
+	s < 10 && (s = '0' + s);
+
+
+
+
+
+
+
 
 	const editToDo = () =>
 	{
 		setEdit(!edit)
 	}
-
-	const getHours = () =>
-	{
-		return ("0" + Math.floor(secondsElapsed / 3600)).slice(-2);
-	}
-
-	const getMinutes = () =>
-	{
-		return ("0" + Math.floor((secondsElapsed % 3600) / 60)).slice(-2);
-	}
-
-	const getSeconds = () =>
-	{
-		return ("0" + (secondsElapsed % 60)).slice(-2);
-	}
-
-	useEffect(() =>
-	{
-		let countdown = setInterval(function ()
-		{
-			setSecondsElapsed(secondsElapsed - 1);
-		}, 1000)
-		if (timeFlag)
-		{
-			// eslint-disable-next-line no-unused-expressions
-			countdown
-		} else
-		{
-			return clearInterval(countdown)
-		}
-	}, [timeFlag, secondsElapsed])
 
 	let classNames = '';
 	let classNamesD = 'description';
@@ -81,14 +123,13 @@ const TaskInfo = ({ label, onDeleted, onToggleImportant, onToggleDone, done, imp
 					}
 					<span className="description">
 						<button
-							disabled={ timeFlag }
-							onClick={ () => setTimeFlag(true) }
+							onClick={ () => setTimerOn(true) }
 							className="icon-play"
 						></button>
 						<button
-							onClick={ () => setTimeFlag(false) }
+							onClick={ () => setTimerOn(false) }
 							className="icon-pause"></button>
-						<p className="timeTask">{ getHours() }:{ getMinutes() }:{ getSeconds() }</p>
+						<p className="timeTask">{ m }:{ s }</p>
 					</span>
 					<span className="created">{ formatDistanceToNow(time, { includeSeconds: true }) }</span>
 				</label>
